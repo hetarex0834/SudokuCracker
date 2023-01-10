@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.lblTitle = new System.Windows.Forms.Label();
+            this.txtTest = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // lblTitle
@@ -41,11 +42,24 @@
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "ナンプレ解読システム";
             // 
+            // txtTest
+            // 
+            this.txtTest.Font = new System.Drawing.Font("Yu Gothic UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.txtTest.ImeMode = System.Windows.Forms.ImeMode.Disable;
+            this.txtTest.Location = new System.Drawing.Point(146, 70);
+            this.txtTest.MaxLength = 1;
+            this.txtTest.Name = "txtTest";
+            this.txtTest.ShortcutsEnabled = false;
+            this.txtTest.Size = new System.Drawing.Size(55, 55);
+            this.txtTest.TabIndex = 1;
+            this.txtTest.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(878, 544);
+            this.Controls.Add(this.txtTest);
             this.Controls.Add(this.lblTitle);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -59,5 +73,6 @@
         #endregion
 
         private Label lblTitle;
+        private TextBox txtTest;
     }
 }
