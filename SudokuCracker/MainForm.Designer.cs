@@ -46,7 +46,7 @@
             // 
             this.txtTest.Font = new System.Drawing.Font("Yu Gothic UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.txtTest.ImeMode = System.Windows.Forms.ImeMode.Disable;
-            this.txtTest.Location = new System.Drawing.Point(146, 70);
+            this.txtTest.Location = new System.Drawing.Point(12, 12);
             this.txtTest.MaxLength = 1;
             this.txtTest.Name = "txtTest";
             this.txtTest.ShortcutsEnabled = false;
@@ -58,7 +58,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(878, 544);
+            this.ClientSize = new System.Drawing.Size(878, 744);
             this.Controls.Add(this.txtTest);
             this.Controls.Add(this.lblTitle);
             this.Name = "MainForm";
