@@ -1,5 +1,3 @@
-using System.Drawing;
-
 namespace SudokuCracker
 {
     /// <summary>
@@ -7,13 +5,12 @@ namespace SudokuCracker
     /// </summary>
     public partial class MainForm : Form
     {
+        // 盤面の長さ
         private static readonly int Len = 9;
-        // テキストボックス
+        // 盤面
         private readonly TextBox[,] txtGrids = new TextBox[Len, Len];
-
-        private readonly int[] boards = new int[Len * Len];
-
-        private bool flg = false;
+        // 盤面の情報
+        private readonly int[] board = new int[Len * Len];
 
         public MainForm()
         {
@@ -58,13 +55,20 @@ namespace SudokuCracker
 
         private void BtnClack_Click(object sender, EventArgs e)
         {
+            bool flg = false;
             Initialize();
-            Solve(0);
+            Solve(0, ref flg);
         }
 
         private void BtnClear_Click(object sender, EventArgs e)
         {
-
+            for (var i = 0; i < Len; i++)
+            {
+                for (var j = 0; j < Len; j++)
+                {
+                    txtGrids[i, j].Text = "";
+                }
+            }
         }
 
         private void Initialize()
@@ -73,24 +77,22 @@ namespace SudokuCracker
             {
                 for (var j = 0; j < Len; j++)
                 {
-                    if (txtGrids[i, j].Text != "") boards[i * Len + j] = int.Parse(txtGrids[i, j].Text);
-                    else boards[ i * Len + j] = 0;
+                    if (txtGrids[i, j].Text != "") board[i * Len + j] = int.Parse(txtGrids[i, j].Text);
+                    else board[ i * Len + j] = 0;
                 }
             }
         }
 
-        private void Solve(int x)
+        private void Solve(int x, ref bool flg)
         {
-             var MaxBoard = Len * Len;
-
-            if (x > MaxBoard - 1)
+            if (x > Len * Len - 1)
             {
                 PrintBoard();
                 flg = true;
             }
             else
             {
-                if (boards[x] != 0) Solve(x + 1);
+                if (board[x] != 0) Solve(x + 1, ref flg);
                 else
                 {
                     for (var i = 1; i <= 9; i++)
@@ -98,9 +100,9 @@ namespace SudokuCracker
                         if (flg) break;
                         if (Check(i, x))
                         {
-                            boards[x] = i;
-                            Solve(x + 1);
-                            boards[x] = 0;
+                            board[x] = i;
+                            Solve(x + 1, ref flg);
+                            board[x] = 0;
                         }
                     }
                 }
@@ -113,7 +115,7 @@ namespace SudokuCracker
             {
                 for (var j = 0; j < Len; j++)
                 {
-                    txtGrids[i, j].Text = $"{boards[i * Len + j]}";
+                    txtGrids[i, j].Text = $"{board[i * Len + j]}";
                 }
             }
         }
@@ -126,15 +128,15 @@ namespace SudokuCracker
 
             for (var i = 0; i < Len; i++)
             {
-                if (boards[rowTop + i] == n) return false;
-                if (boards[columnTop + i * Len] == n) return false;
+                if (board[rowTop + i] == n) return false;
+                if (board[columnTop + i * Len] == n) return false;
             }
 
             for (var i = 0; i < 3; i++)
             {
                 for (var j = 0; j < 3; j++)
                 {
-                    if (boards[frameTop + Len * i + j] == n) return false;
+                    if (board[frameTop + Len * i + j] == n) return false;
                 }
             }
 
