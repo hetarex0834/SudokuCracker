@@ -78,7 +78,7 @@
             this.MinimumSize = new System.Drawing.Size(900, 800);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "ナンプレ解読";
+            this.Text = "SudokuCracker";
             this.ResumeLayout(false);
             this.PerformLayout();
 
