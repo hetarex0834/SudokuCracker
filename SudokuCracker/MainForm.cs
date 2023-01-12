@@ -38,7 +38,6 @@ namespace SudokuCracker
                 {
                     txtSquares[i, j] = new TextBox()
                     {
-                        Name = $"{i}-{j}",
                         ImeMode = ImeMode.Disable,
                         MaxLength = 1,
                         ShortcutsEnabled = false,
@@ -79,9 +78,27 @@ namespace SudokuCracker
         /// </summary>
         private void BtnClack_Click(object sender, EventArgs e)
         {
-            var flg = false; // 解読完了フラグ
-            SetSquareValue();
-            SquareSearch(0, ref flg);
+            // タイムアウト用オブジェクト
+            var cts = new CancellationTokenSource();
+            // 解読完了フラグ
+            var flg = false;
+
+            try
+            {
+                // タイムアウトを設定
+                cts.CancelAfter(5000);
+                // 解読開始
+                SetSquareValue();
+                SquareSearch(0, ref flg, cts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                MessageBox.Show("タイムアウトしました。", "タイムアウト", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                cts.Dispose();
+            }
         }
 
         /// <summary>
@@ -111,8 +128,12 @@ namespace SudokuCracker
         /// </summary>
         /// <param name="x">マスの添字</param>
         /// <param name="flg">解読完了フラグ</param>
-        private void SquareSearch(int x, ref bool flg)
+        /// <param name="ct">タイムアウト用オブジェクト</param>
+        private void SquareSearch(int x, ref bool flg, CancellationToken ct)
         {
+            // タイムアウトの場合、例外処理を投げる
+            ct.ThrowIfCancellationRequested();
+
             if (x > Max - 1)
             {
                 // 解読結果を出力
@@ -122,7 +143,7 @@ namespace SudokuCracker
             else
             {
                 // マスが空白でない場合、次の探索へ移行
-                if (sqVals[x] != 0) SquareSearch(x + 1, ref flg);
+                if (sqVals[x] != 0) SquareSearch(x + 1, ref flg, ct);
                 else
                 {
                     // 1~9の数字を順にマスに入れる
@@ -132,7 +153,7 @@ namespace SudokuCracker
                         if (Check(n, x))
                         {
                             sqVals[x] = n;
-                            SquareSearch(x + 1, ref flg); // 次の探索
+                            SquareSearch(x + 1, ref flg, ct); // 次の探索
                             sqVals[x] = 0; // マスの初期化
                         }
                     }
