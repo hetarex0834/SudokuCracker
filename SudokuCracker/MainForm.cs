@@ -5,22 +5,24 @@ namespace SudokuCracker
     /// </summary>
     public partial class MainForm : Form
     {
-        // 一列のマス目の個数
-        private static readonly int Number = 9;
-        // マス目の個数
-        private static readonly int Max = Number * Number;
-        // マス目
-        private readonly TextBox[,] txtSquares = new TextBox[Number, Number];
-        // マス目の数字
-        private readonly int[] sqVals = new int[Number * Number];
-        // マス目のX座標の初期値
-        private readonly int StartX = 160;
-        // マス目のY座標の初期値
-        private readonly int StartY = 80;
-        // マス目の配置間隔
-        private readonly int SqSpace = 60;
-        // マス目のサイズ
-        private readonly int SqSize = 55;
+        // マスの区切り
+        private static readonly int Frame = 3;
+        // 一列のマスの個数
+        private static readonly int Num = Frame * 3;
+        // マスの個数
+        private static readonly int Max = Num * Num;
+        // マスのX座標の初期値
+        private static readonly int StartX = 160;
+        // マスのY座標の初期値
+        private static readonly int StartY = 80;
+        // マスの配置間隔
+        private static readonly int SqSpace = 60;
+        // マスのサイズ
+        private static readonly int SqSize = 55;
+        // マス
+        private readonly TextBox[,] txtSquares = new TextBox[Num, Num];
+        // マスの数字
+        private readonly int[] sqVals = new int[Max];
 
         /// <summary>
         /// コンポーネントを設定
@@ -29,17 +31,18 @@ namespace SudokuCracker
         {
             InitializeComponent();
 
-            // マス目を作成
-            for (var i = 0; i < Number; i++)
+            // マスを作成
+            for (var i = 0; i < Num; i++)
             {
-                for (var j = 0; j < Number; j++)
+                for (var j = 0; j < Num; j++)
                 {
                     txtSquares[i, j] = new TextBox()
                     {
+                        Name = $"{i}-{j}",
                         ImeMode = ImeMode.Disable,
                         MaxLength = 1,
                         ShortcutsEnabled = false,
-                        TabIndex = i * Number + j + 1,
+                        TabIndex = i * Num + j + 1,
                         Location = new Point(StartX + SqSpace * j, StartY + SqSpace * i),
                         Size = new Size(SqSize, SqSize),
                         Font = new Font("Yu Gothic UI", 18F, FontStyle.Bold, GraphicsUnit.Point),
@@ -47,13 +50,13 @@ namespace SudokuCracker
                     };
 
                     // 3×3マスごとに背景色を設定
-                    if (i < 3 || 5 < i)
+                    if (i < Frame || Frame * 2 - 1 < i)
                     {
-                        if (3 <= j && j <= 5) txtSquares[i, j].BackColor = Color.LightGray;
+                        if (Frame <= j && j <= Frame * 2 - 1) txtSquares[i, j].BackColor = Color.LightGray;
                     }
                     else
                     {
-                        if (j < 3 || 5 < j) txtSquares[i, j].BackColor = Color.LightGray;
+                        if (j < Frame || Frame * 2 - 1 < j) txtSquares[i, j].BackColor = Color.LightGray;
                     }
 
                     txtSquares[i, j].KeyPress += TxtSquares_KeyPress;
@@ -76,13 +79,13 @@ namespace SudokuCracker
         /// </summary>
         private void BtnClack_Click(object sender, EventArgs e)
         {
-            bool flg = false; // 解読完了フラグ
+            var flg = false; // 解読完了フラグ
             SetSquareValue();
-            Solve(0, ref flg);
+            SquareSearch(0, ref flg);
         }
 
         /// <summary>
-        /// マス目を初期化
+        /// マスを初期化
         /// </summary>
         private void BtnClear_Click(object sender, EventArgs e)
         {
@@ -90,44 +93,47 @@ namespace SudokuCracker
         }
 
         /// <summary>
-        /// マス目の数字を設定
+        /// マスの数字を設定
         /// </summary>
         private void SetSquareValue()
         {
-            for (var i = 0; i < Number; i++)
+            for (var i = 0; i < Num; i++)
             {
-                for (var j = 0; j < Number; j++)
+                for (var j = 0; j < Num; j++)
                 {
-                    sqVals[i * Number + j] = (txtSquares[i, j].Text != "") ? int.Parse(txtSquares[i, j].Text) : 0;
+                    sqVals[i * Num + j] = (txtSquares[i, j].Text != "") ? int.Parse(txtSquares[i, j].Text) : 0;
                 }
             }
         }
 
         /// <summary>
-        /// ナンプレ解読
+        /// マスの探索
         /// </summary>
-        /// <param name="x">マス目の添字</param>
+        /// <param name="x">マスの添字</param>
         /// <param name="flg">解読完了フラグ</param>
-        private void Solve(int x, ref bool flg)
+        private void SquareSearch(int x, ref bool flg)
         {
             if (x > Max - 1)
             {
+                // 解読結果を出力
                 PrintSquare();
                 flg = true;
             }
             else
             {
-                if (sqVals[x] != 0) Solve(x + 1, ref flg);
+                // マスが空白でない場合、次の探索へ移行
+                if (sqVals[x] != 0) SquareSearch(x + 1, ref flg);
                 else
                 {
-                    for (var i = 1; i <= 9; i++)
+                    // 1~9の数字を順にマスに入れる
+                    for (var n = 1; n <= Num; n++)
                     {
                         if (flg) break;
-                        if (Check(i, x))
+                        if (Check(n, x))
                         {
-                            sqVals[x] = i;
-                            Solve(x + 1, ref flg);
-                            sqVals[x] = 0;
+                            sqVals[x] = n;
+                            SquareSearch(x + 1, ref flg); // 次の探索
+                            sqVals[x] = 0; // マスの初期化
                         }
                     }
                 }
@@ -135,15 +141,15 @@ namespace SudokuCracker
         }
 
         /// <summary>
-        /// 解読結果をマス目に出力
+        /// 解読結果をマスに出力
         /// </summary>
         private void PrintSquare()
         {
-            for (var i = 0; i < Number; i++)
+            for (var i = 0; i < Num; i++)
             {
-                for (var j = 0; j < Number; j++)
+                for (var j = 0; j < Num; j++)
                 {
-                    txtSquares[i, j].Text = $"{sqVals[i * Number + j]}";
+                    txtSquares[i, j].Text = $"{sqVals[i * Num + j]}";
                 }
             }
         }
@@ -152,25 +158,29 @@ namespace SudokuCracker
         /// 数字の重複チェック
         /// </summary>
         /// <param name="n">チェック対象の数字</param>
-        /// <param name="x">チェック対象のマス目の添字</param>
+        /// <param name="x">チェック対象のマスの添字</param>
         /// <returns>真偽値</returns>
         private bool Check(int n, int x)
         {
-            var rowTop = x / Number * Number;
-            var columnTop = x % Number;
-            var frameTop = x - x / Number * Number % 27 - x % 3;
+            // 横1行の左端のマスの添字
+            var rowTop = x / Num * Num;
+            // 縦1列の上端のマスの添字
+            var columnTop = x % Num;
+            // 3×3マスの左上端のマスの添字
+            var frameTop = x - x / Num * Num % (Num * Frame) - x % Frame;
 
-            for (var i = 0; i < Number; i++)
+            // 横1行・縦1列の重複チェック
+            for (var i = 0; i < Num; i++)
             {
                 if (sqVals[rowTop + i] == n) return false;
-                if (sqVals[columnTop + i * Number] == n) return false;
+                if (sqVals[columnTop + i * Num] == n) return false;
             }
-
-            for (var i = 0; i < 3; i++)
+            // 3×3マスの重複チェック
+            for (var i = 0; i < Frame; i++)
             {
-                for (var j = 0; j < 3; j++)
+                for (var j = 0; j < Frame; j++)
                 {
-                    if (sqVals[frameTop + Number * i + j] == n) return false;
+                    if (sqVals[frameTop + i * Num + j] == n) return false;
                 }
             }
 
