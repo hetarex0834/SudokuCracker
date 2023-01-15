@@ -38,6 +38,7 @@ namespace SudokuCracker
                 {
                     txtSquares[i, j] = new TextBox()
                     {
+                        Text = "",
                         ImeMode = ImeMode.Disable,
                         MaxLength = 1,
                         ShortcutsEnabled = false,
@@ -79,12 +80,11 @@ namespace SudokuCracker
         private void BtnClack_Click(object sender, EventArgs e)
         {
             // タイムアウト用オブジェクト
-            var cts = new CancellationTokenSource();
-            // 解読完了フラグ
-            var flg = false;
-
+            using var cts = new CancellationTokenSource();
             try
             {
+                // 解読完了フラグ
+                var flg = false;
                 // タイムアウトを設定
                 cts.CancelAfter(5000);
                 // 解読開始
@@ -94,10 +94,6 @@ namespace SudokuCracker
             catch (OperationCanceledException)
             {
                 MessageBox.Show("タイムアウトしました。", "タイムアウト", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                cts.Dispose();
             }
         }
 
