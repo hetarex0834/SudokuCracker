@@ -1,6 +1,6 @@
 # ナンプレ解読システム
 
-![サンプル画像](./img/screenshot01.png)
+<img src="./img/screenshot01.png" width="400px">
 
 ナンプレを解読できるWindowsアプリケーションです。
 
